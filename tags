@@ -1,0 +1,109 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/06f9fde/
+;	vimrc	/^nnoremap ; :$/;"	m
+<C-@><C-@>c	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@><C-@>d	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@><C-@>e	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@><C-@>f	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>f :vert scs find f <C-R>=expand("<cfile>")<CR><CR>	$/;"	m
+<C-@><C-@>g	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@><C-@>i	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	$/;"	m
+<C-@><C-@>s	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@><C-@>t	scripts/cscope_maps.vim	/^    nmap <C-@><C-@>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>$/;"	m
+<C-@>c	scripts/cscope_maps.vim	/^    nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-@>d	scripts/cscope_maps.vim	/^    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-@>e	scripts/cscope_maps.vim	/^    nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-@>f	scripts/cscope_maps.vim	/^    nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>	$/;"	m
+<C-@>g	scripts/cscope_maps.vim	/^    nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-@>i	scripts/cscope_maps.vim	/^    nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	$/;"	m
+<C-@>s	scripts/cscope_maps.vim	/^    nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-@>t	scripts/cscope_maps.vim	/^    nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>c	scripts/cscope_maps.vim	/^    nmap <C-\\>c :cs find c <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>d	scripts/cscope_maps.vim	/^    nmap <C-\\>d :cs find d <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>e	scripts/cscope_maps.vim	/^    nmap <C-\\>e :cs find e <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>f	scripts/cscope_maps.vim	/^    nmap <C-\\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>	$/;"	m
+<C-\\>g	scripts/cscope_maps.vim	/^    nmap <C-\\>g :cs find g <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>i	scripts/cscope_maps.vim	/^    nmap <C-\\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>$/;"	m
+<C-\\>s	scripts/cscope_maps.vim	/^    nmap <C-\\>s :cs find s <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-\\>t	scripts/cscope_maps.vim	/^    nmap <C-\\>t :cs find t <C-R>=expand("<cword>")<CR><CR>	$/;"	m
+<C-h>	vimrc	/^nmap <C-h> <C-w>h$/;"	m
+<C-j>	vimrc	/^nmap <C-j> <C-w>j$/;"	m
+<C-k>	vimrc	/^nmap <C-k> <C-w>k$/;"	m
+<C-l>	vimrc	/^nmap <C-l> <C-w>l$/;"	m
+<C-n>	vimrc	/^nnoremap <C-n> gt$/;"	m
+<F10>	vimrc	/^    nnoremap <buffer><silent> <F10> :w<cr> :!gdb %< <cr>$/;"	m
+<F8>	vimrc	/^    nnoremap <buffer> <F8> :!javac %<cr>$/;"	m
+<F8>	vimrc	/^    nnoremap <buffer><silent> <F8> :w<cr>:!g++ % -O2 -o %< -std=c++11 -I -g.\/<cr>$/;"	m
+<F9>	vimrc	/^    nnoremap <buffer> <F9> :!javac %<cr>:!clear;java %< %<cr>$/;"	m
+<F9>	vimrc	/^    nnoremap <buffer><silent> <F9> :w<cr>:!g++ % -O2 -o %< -std=c++11 -I .\/<cr>:!clear; time .\//;"	m
+<F9>	vimrc	/^    nnoremap <buffer><silent> <F9> :w<cr>:!python %<cr>$/;"	m
+<S-TAB>	vimrc	/^vnoremap <silent> <S-TAB> <gv$/;"	m
+<Space>	vimrc	/^nmap <Space> <Plug>RDSendLine$/;"	m
+<Space>	vimrc	/^vmap <Space> <Plug>RDSendSelection$/;"	m
+<TAB>	vimrc	/^vnoremap <silent> <TAB> >gv$/;"	m
+<c-m>	vimrc	/^nmap <c-m> gT$/;"	m
+<f10>	vimrc	/^    nnoremap <buffer><silent> <f10> :w<cr> :!gdb %<<cr>$/;"	m
+<f8>	vimrc	/^    nnoremap <buffer><silent> <f8> :w<cr>:!gcc -o2 -o %< % -g.\/<cr>$/;"	m
+<f9>	vimrc	/^    nnoremap <buffer><silent> <f9> :w<cr>:!gcc -o2 -o %< %<cr>:!clear && .\/%<<cr>$/;"	m
+<leader><space>	vimrc	/^nmap <leader><space> :nohl<cr>$/;"	m
+<leader>bc	vimrc	/^    nnoremap <buffer> <leader>bc :!find . -iname '*.c' -o -iname '*.cpp' -o -iname '*.h' -o -ina/;"	m
+<leader>bt	vimrc	/^nnoremap <leader>bt :!$HOME\/.vim\/scripts\/ctags_deps.sh $(cat fileslist)<cr>$/;"	m
+<leader>el	vimrc	/^nmap <leader>el :lclose<cr>$/;"	m
+<leader>er	vimrc	/^nmap <leader>er :lopen<cr>$/;"	m
+<leader>jd	vimrc	/^nnoremap <leader>jd :YcmCompleter GoTo<CR>$/;"	m
+<leader>m	vimrc	/^nmap <leader>m :make<cr>$/;"	m
+<leader>nt	vimrc	/^nmap <leader>nt :NERDTreeToggle<cr>$/;"	m
+<leader>sh	vimrc	/^nnoremap <leader>sh :shell<cr>$/;"	m
+<leader>t	vimrc	/^nmap <leader>t :TagbarToggle<cr>$/;"	m
+<leader>w	vimrc	/^nmap <leader>w :w<cr>$/;"	m
+CPPSET	vimrc	/^function! CPPSET()$/;"	f
+CSET	vimrc	/^function! CSET() $/;"	f
+GetGooglePythonIndent	scripts/google_python_style.vim	/^function GetGooglePythonIndent(lnum)$/;"	f
+JAVASET	vimrc	/^function! JAVASET()$/;"	f
+LoadCscope	vimrc	/^function! LoadCscope()$/;"	f
+PYSET	vimrc	/^function! PYSET()$/;"	f
+R_applescript	vimrc	/^let R_applescript = 0$/;"	v
+R_in_buffer	vimrc	/^let R_in_buffer = 0$/;"	v
+R_notmuxconf	vimrc	/^let R_notmuxconf=1$/;"	v
+R_nvim_wd	vimrc	/^let R_nvim_wd=1$/;"	v
+R_tmux_split	vimrc	/^let R_tmux_split = 1$/;"	v
+Y	vimrc	/^nnoremap Y y\$$/;"	m
+c_syntax_for_h	vimrc	/^let c_syntax_for_h=1$/;"	v
+g:UltiSnipsExpandTrigger	vimrc	/^let g:UltiSnipsExpandTrigger="<c-j>"$/;"	v
+g:UltiSnipsJumpBackwardTrigger	vimrc	/^let g:UltiSnipsJumpBackwardTrigger="<c-k>"$/;"	v
+g:UltiSnipsJumpForwardTrigger	vimrc	/^let g:UltiSnipsJumpForwardTrigger="<c-j>"$/;"	v
+g:UltiSnipsListSnippets	vimrc	/^let g:UltiSnipsListSnippets="<c-s-n>"$/;"	v
+g:UltiSnipsSnippetDirectories	vimrc	/^let g:UltiSnipsSnippetDirectories=["\/home\/nakhoa\/.vim\/plugged\/vim-snippets\/UltiSnips"]$/;"	v
+g:airline_powerline_fonts	vimrc	/^let g:airline_powerline_fonts=0 " powerline option of vim-airline$/;"	v
+g:airline_theme	vimrc	/^let g:airline_theme='gruvbox'$/;"	v
+g:neomake_cpp_clang_args	vimrc	/^let g:neomake_cpp_clang_args = ['-std=c++11', '-Wall', '-Wextra', '-O2', '-lstdc++']$/;"	v
+g:neomake_cpp_enabled_makers	vimrc	/^let g:neomake_cpp_enabled_makers = ['clang', 'gcc']$/;"	v
+g:neomake_cpp_gcc_args	vimrc	/^let g:neomake_cpp_gcc_args = ['-std=c++11', '-Wall', '-Wextra', '-O2']$/;"	v
+g:neomake_python_enabled_makers	vimrc	/^let g:neomake_python_enabled_makers=['python']$/;"	v
+g:tagbar_autoclose	vimrc	/^let g:tagbar_autoclose=1$/;"	v
+g:tmux_navigator_save_on_switch	vimrc	/^let g:tmux_navigator_save_on_switch=2$/;"	v
+g:ycm_autoclose_preview_window_after_completion	vimrc	/^let g:ycm_autoclose_preview_window_after_completion = 1		 " Auto close preview tab$/;"	v
+g:ycm_collect_identifiers_from_tags_files	vimrc	/^let g:ycm_collect_identifiers_from_tags_files = 0					 " Let YCM read tags from Ctags file$/;"	v
+g:ycm_complete_in_comments	vimrc	/^let g:ycm_complete_in_comments = 1													" Completion in comments$/;"	v
+g:ycm_complete_in_strings	vimrc	/^let g:ycm_complete_in_strings = 1													 " Completion in string$/;"	v
+g:ycm_global_ycm_extra_conf	vimrc	/^let g:ycm_global_ycm_extra_conf='~\/.vim\/.ycm_extra_conf.py'$/;"	v
+g:ycm_goto_buffer_command	vimrc	/^let g:ycm_goto_buffer_command = 'vertical-split'						" Goto definition in new split$/;"	v
+g:ycm_key_list_previous_completion	vimrc	/^let g:ycm_key_list_previous_completion=['<Up>']$/;"	v
+g:ycm_key_list_select_completion	vimrc	/^let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']$/;"	v
+g:ycm_seed_identifiers_with_syntax	vimrc	/^let g:ycm_seed_identifiers_with_syntax = 1									" Completion for programming language's keywo/;"	v
+g:ycm_use_ultisnips_completer	vimrc	/^let g:ycm_use_ultisnips_completer = 1											 " Default 1, just ensure$/;"	v
+gY	vimrc	/^nnoremap gY gg"+yG$/;"	m
+gy	vimrc	/^nnoremap gy "+y$/;"	m
+is_vim	tmux.conf	/^is_vim="ps -o state= -o comm= -t '#{pane_tty}' \\$/;"	k
+jj	vimrc	/^inoremap jj <ESC>$/;"	m
+jk	vimrc	/^inoremap jk <ESC>$/;"	m
+mapleader	vimrc	/^let mapleader=','$/;"	v
+maplocalleader	vimrc	/^let maplocalleader=','$/;"	v
+pyindent_nested_paren	scripts/google_python_style.vim	/^let pyindent_nested_paren="&sw*2"$/;"	v
+pyindent_open_paren	scripts/google_python_style.vim	/^let pyindent_open_paren="&sw*2"$/;"	v
+s:maxoff	scripts/google_python_style.vim	/^let s:maxoff = 50 " maximum number of lines to look backwards.$/;"	v
+w:airline_disabled	vimrc	/^let w:airline_disabled = 0$/;"	v
