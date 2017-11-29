@@ -1,12 +1,5 @@
 " load config for c++
 "load config for java
-function! JAVASET()
-    setlocal shiftwidth=4
-    setlocal softtabstop=4
-    setlocal colorcolumn=80
-    nnoremap <buffer> <F8> :!javac %<cr>
-    nnoremap <buffer> <F9> :!javac %<cr>:!clear;java %< %<cr>
-endfunction
 
 " load config for ansi C
 function! CSET() 
@@ -48,4 +41,3 @@ function! JSSET()
     let g:tern_show_argument_hints='on_hold'
     let g:tern_show_signature_in_pum=1
 endfunction
-
