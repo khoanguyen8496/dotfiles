@@ -40,15 +40,26 @@ Plug 'mileszs/ack.vim'
 " autotagging need config
 " Plug 'ludovicchabant/vim-gutentags'
 "python autocomplete
-Plug 'davidhalter/jedi-vim'
+" Plug 'davidhalter/jedi-vim'
 " linter
 Plug 'w0rp/ale'
 " web tag closin
 Plug 'alvan/vim-closetag'
 " c and cpp complete using clang
-Plug 'Rip-Rip/clang_complete'
+" Plug 'Rip-Rip/clang_complete'
 " java complete
-Plug 'artur-shaik/vim-javacomplete2'
+" Plug 'artur-shaik/vim-javacomplete2'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+" Plugin for deoplete
+Plug 'zchee/deoplete-clang'
+Plug 'zchee/deoplete-jedi'
+Plug 'Shougo/neco-syntax'
 
 call plug#end()
 
@@ -96,9 +107,6 @@ set timeoutlen=500
 set ttimeoutlen=100 " timeout when keypress belong to any combos
 
 " Tab related stuffs
-set shiftwidth=4
-set expandtab
-set softtabstop=4
 set shiftround    " when shifting non-aligned set of lines, align them to next tabstop
 set smarttab
 

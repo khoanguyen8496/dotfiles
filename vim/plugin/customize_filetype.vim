@@ -21,6 +21,7 @@ function! CSET()
 endfunction
 
 function! PYSET()
+    setlocal expandtab
     setlocal shiftwidth=4
     setlocal foldmethod=indent
     setlocal softtabstop=4
@@ -30,6 +31,7 @@ function! PYSET()
 endfunction
 
 function! JSSET()
+    setlocal expandtab
     setlocal tabstop=2
     setlocal shiftwidth=2
     setlocal softtabstop=2

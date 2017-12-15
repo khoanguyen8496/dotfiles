@@ -63,14 +63,23 @@ let g:closetag_close_shortcut = '<leader>>'
 
 " clang_complete
 
-let g:clang_user_options = '-std=c++11'
-let g:clang_snippets = 1
-let g:clang_snippets_engine = 'ultisnips'
-let g:clang_jumpto_back_key = "<C-O>"
-let g:clang_complete_macros = 1
+" let g:clang_user_options = '-std=c++11'
+" let g:clang_snippets = 1
+" let g:clang_snippets_engine = 'ultisnips'
+" let g:clang_jumpto_back_key = 
+" let g:clang_complete_macros = 1
 
 " vim-gitgutter
 "
 let g:gitgutter_grep_command = 'ag'
 
-let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
+let g:SuperTabDefaultCompletionType = "context"
+
+" deoplete config
+"
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#auto_complete_delay = 100
+let g:deoplete#sources#clang#libclang_path = "/usr/lib64/libclang.so"
+let g:deoplete#sources#clang#clang_header = "/usr/lib64/clang/4.0.1/include/"
+
+
