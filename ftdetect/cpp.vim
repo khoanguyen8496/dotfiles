@@ -2,6 +2,7 @@
 au BufRead,BufNewFile *.cpp,*.cc,*.cxx set filetype=cpp
 
 function! CPPSET()
+    setlocal expandtab
     setlocal tabstop=2
     setlocal shiftwidth=2
     setlocal softtabstop=2

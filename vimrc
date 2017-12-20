@@ -46,7 +46,6 @@ Plug 'alvan/vim-closetag'
 " c and cpp complete using clang
 " java complete
 Plug 'Valloric/YouCompleteMe', {'dir': '~/.vim/plugged/YouCompleteMe', 'do': './install.py --clang-completer'}
-
 call plug#end()
 
 set nocompatible
@@ -94,9 +93,6 @@ set timeoutlen=500
 set ttimeoutlen=100 " timeout when keypress belong to any combos
 
 " Tab related stuffs
-set shiftwidth=4
-set expandtab
-set softtabstop=4
 set shiftround    " when shifting non-aligned set of lines, align them to next tabstop
 set smarttab
 
