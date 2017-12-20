@@ -1,23 +1,17 @@
 " airline config
 let w:airline_disabled = 0
-let g:airline_powerline_fonts=1 " powerline option of vim-airline
+let g:airline_powerline_fonts=0 " powerline option of vim-airline
 let g:airline#extensions#ale#enabled = 1
 " ultisnips config
-let g:UltiSnipsExpandTrigger="<c-j>"
-let g:UltiSnipsListSnippets="<c-n>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsExpandTrigger="<c-l>"
+let g:UltiSnipsListSnippets="<c-k>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsSnippetDirectories=["/home/nakhoa/.vim/plugged/vim-snippets/UltiSnips"]
 
 " tmux with vim config 
 let g:tmux_navigator_save_on_switch=2
 
-" neomake for c++
-let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
-let g:neomake_cpp_gcc_args = ['-std=c++11', '-Wall', '-Wextra', '-O2']
-let g:neomake_cpp_clang_args = ['-std=c++11', '-Wall', '-Wextra', '-O2', '-lstdc++']
-"neomake for python
-let g:neomake_python_enabled_makers=['python']
 " nvim-r config
 command RStart let oldft=&ft | set ft=r | exe 'set ft='.oldft | let b:IsInRCode = function("DefaultIsInRCode") | normal <LocalLeader>rf
 let R_notmuxconf=1
@@ -61,16 +55,19 @@ let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
 let g:closetag_close_shortcut = '<leader>>'
 
-" clang_complete
-
-let g:clang_user_options = '-std=c++11'
-let g:clang_snippets = 1
-let g:clang_snippets_engine = 'ultisnips'
-let g:clang_jumpto_back_key = "<C-O>"
-let g:clang_complete_macros = 1
-
 " vim-gitgutter
 "
 let g:gitgutter_grep_command = 'ag'
 
-let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
+let g:SuperTabDefaultCompletionType = "context"
+
+" ycm config
+let g:ycm_max_num_candidates=30
+let g:ycm_max_num_identifier_candidates=30
+let g:ycm_warning_symbol='__'
+let g:ycm_add_preview_to_completeopt=1
+let g:ycm_autoclose_preview_window_after_insertion=1
+let g:ycm_key_list_select_completion=['<c-n>', 'Down']
+let g:ycm_key_list_previous_completion=['<c-p', 'Up']
+let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
+let g:ycm_disable_for_files_larger_than_kb=1024

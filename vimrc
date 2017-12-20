@@ -7,7 +7,6 @@ Plug 'majutsushi/tagbar'
 Plug 'scrooloose/nerdtree' 
 " edit text
 Plug 'ervandew/supertab'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-commentary'
@@ -40,15 +39,13 @@ Plug 'mileszs/ack.vim'
 " autotagging need config
 " Plug 'ludovicchabant/vim-gutentags'
 "python autocomplete
-Plug 'davidhalter/jedi-vim'
 " linter
 Plug 'w0rp/ale'
 " web tag closin
 Plug 'alvan/vim-closetag'
 " c and cpp complete using clang
-Plug 'Rip-Rip/clang_complete'
 " java complete
-Plug 'artur-shaik/vim-javacomplete2'
+Plug 'Valloric/YouCompleteMe', {'dir': '~/.vim/plugged/YouCompleteMe', 'do': './install.py --clang-completer'}
 
 call plug#end()
 
@@ -57,6 +54,7 @@ set encoding=utf-8
 set foldmethod=syntax
 set path+=**
 set nofoldenable
+set splitbelow
 set bs=2          " backspace should work as we expect
 set bg=dark
 if has('gui_running')
@@ -115,7 +113,7 @@ set complete-=i
 set complete+=t
 " set complete+=k
 set lazyredraw
-set completeopt=menu
+set completeopt=menu,preview
 set dictionary+=/usr/share/dict/words
 set tags=./tags
 " 2 line for statusline
