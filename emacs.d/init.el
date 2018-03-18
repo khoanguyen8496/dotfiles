@@ -3,14 +3,31 @@
 (add-to-list 'package-archives
 	     '("marmalade" . "https://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
+	     '("melpa" . "https://melpa.milkbox.net/packages/") t)
 
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" "b050365105e429cb517d98f9a267d30c89336e36b109a1723d95bc0f7ce8c11d" "7366916327c60fdf17b53b4ac7f565866c38e1b4a27345fe7facbf16b7a4e9e8" "490644a43ad9f71848f067be117bab2839b7c010eb9ec439abf3908d9a63d1dd" default))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+;; theme-config
+(load-theme 'gruvbox-light-hard)
+;; user config
 (add-to-list 'load-path "~/.emacs.d/better-defaults/")
 (require 'better-defaults)
 (global-linum-mode t)
 (xterm-mouse-mode t)
 (server-mode  t)
+(setq ido-everywhere t)
 
 ;;; default c++ style : google
 (add-hook 'c++-mode-hook 'google-set-c-style)
@@ -63,3 +80,18 @@
 (set-face-attribute 'default nil :font "Liberation Mono-11" )
 (set-frame-font "Liberation Mono-11" nil t)
 (put 'narrow-to-page 'disabled nil)
+;;; company config
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+;;; irony mode config with company
+(require 'irony)
+(require 'company-irony)
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
+(require 'clang-format)
+(blink-cursor-mode 0)
