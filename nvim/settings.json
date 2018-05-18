@@ -1,0 +1,13 @@
+{
+	"initializationOptions": {
+		"cacheDirectory": "/tmp/lsp_cache"
+	},
+	"TextDocumentClientCapabilities": {
+		"completion": {
+			"completionItem": {
+				"snippetSupport": false
+			}
+		}
+	}
+}
+
