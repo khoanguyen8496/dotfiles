@@ -5,7 +5,6 @@ call plug#begin('~/.vim/plugged')
 " Make sure you use single quotes
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
 
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -25,25 +24,31 @@ Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets' |
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 " colorscheme
-Plug 'ayu-theme/ayu-vim' " or other package manager
-Plug 'jacoborus/tender.vim'
+"
+Plug 'NLKNguyen/papercolor-theme'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 call plug#end()
 " }}} plugin
 
-let ayucolor="light"  " for light version of theme
 set termguicolors
-set bg=dark
-colorscheme tender
+colorscheme PaperColor
+set background=light
 set ignorecase
 set mouse+=a
-set clipboard+=unnamedplus
-set noet
+set clipboard+=unnamedplus,unnamed
+set number
+set ruler
+set relativenumber
+set history=10000
+set hidden
 
 set sta
-set sts=8
-set si
+set noexpandtab
+set softtabstop=8
+set shiftwidth=8
+set tabstop=8
+set smartindent
 set foldmethod=marker
 
 " lua conf{{{ 
@@ -59,7 +64,7 @@ local on_attach = function(client, bufnr)
   --Enable completion triggered by <c-x><c-o>
   buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  -- Mappings.
+  -- Mappings
   local opts = { noremap=true, silent=true }
 
   -- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -85,7 +90,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = {"gopls"}
+local servers = {"gopls", "ccls"}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
@@ -171,23 +176,31 @@ EOF
 " }}}
 "
 " keymap {{{
-let mapleader=" "
+let mapleader="\<space>"
 inoremap <silent><expr> <C-Space> compe#complete()
 inoremap <silent><expr> <CR>      compe#confirm('<CR>')
 inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
-" tnoremap <esc> <c-\><c-n>
 nmap <F4> :!./a.out < inp<cr>
 nmap <F5> :!<cr>
 nmap <F6> :FZF<cr>
 nmap <F3> :Rg<cr>
-nmap <F9> :!g++ -std=c++11 %<cr>
+nmap <F2> :w<cr>
 nmap <leader>nt :NERDTreeToggle<cr>
+vnoremap > >gv
+vnoremap < <gv
+
+aug Comment
+	au!
+	au Filetype cpp set commentstring=\/\/\ %s
+aug END
 
 aug LC
 	au!
-	au Filetype go :nmap <buffer> <F9> :!go run %<cr>
+	au Filetype cpp nmap <buffer> <F9> :!g++ -std=c++11 % && ./a.out < inp<cr>
+	au Filetype cpp setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
+	au Filetype go nmap <buffer> <F9> :!go run %<cr>
 aug END
 
 " }}}
