@@ -1,25 +1,42 @@
-(require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-  ;; and `package-pinned-packages`. Most users will not need or want to do this.
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  )
-(package-initialize)
+;; (require 'package)
+;; (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+;;                     (not (gnutls-available-p))))
+;;        (proto (if no-ssl "http" "https")))
+;;   (when no-ssl (warn "\
+;; Your version of Emacs does not support SSL connections,
+;; which is unsafe because it allows man-in-the-middle attacks.
+;; There are two things you can do about this warning:
+;; 1. Install an Emacs version that does support SSL and be safe.
+;; 2. Remove this warning from your init file so you won't see it again."))
+;;   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+;;   ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;;   ;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;   ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+;;   )
+;; (package-initialize)
+(setq package-enable-at-startup nil)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
 
   ;; use-package to simplify the config file
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 (require 'use-package)
+
+(setq straight-use-package-by-default 't)
 
 (setq use-package-always-ensure 't)
 (use-package magit)
@@ -28,13 +45,19 @@ There are two things you can do about this warning:
   :init
   (which-key-mode))
 (use-package go-mode)
-(use-package company)
+(use-package company
+  :init
+  (global-company-mode))
 (use-package rg)
 (use-package undo-tree
   :init
-  (undo-tree-mode))
+  (global-undo-tree-mode)
+  :bind
+  (("C-/" . undo-tree-undo)
+   ("C-?" . undo-tree-redo)))
 (use-package yasnippet
-  :hook (prog-mode . (yas-minor-mode)))
+  :init
+  (yas-global-mode 1))
 (use-package load-env-vars)
 (use-package projectile
   :ensure t
@@ -45,7 +68,7 @@ There are two things you can do about this warning:
               ("C-c p" . projectile-command-map)))
   ;; :hook (go-mode . lsp-deferred))
 (use-package lsp-mode
-  :hook (prog-mode . (lsp-mode)))
+  :hook (prog-mode . (lsp-deferred)))
 
 ;; (add-hook 'go-mode-hook #'lsp-deferred)
 ;; (add-hook 'go-mode-hook #'yas-minor-mode)
@@ -88,7 +111,16 @@ There are two things you can do about this warning:
 (use-package savehist
   :init
   (savehist-mode))
+(load-theme 'tango-dark t)
+(use-package tree-sitter
+  :init
+  (global-tree-sitter-mode))
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
+(use-package tree-sitter-langs)
+(show-paren-mode 1)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
+(require 'protobuf-mode)
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -111,6 +143,7 @@ There are two things you can do about this warning:
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
+(setq default-frame-alist '((font . "Source Code Pro-14")))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
