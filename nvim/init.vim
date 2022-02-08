@@ -11,22 +11,9 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
 
-" autocomplete
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'SirVer/ultisnips'
-Plug 'quangnguyen30192/cmp-nvim-ultisnips'
-Plug 'neovim/nvim-lspconfig'
-" For ultisnips users.
-
-" Any valid git URL is allowed
-Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-
 " Multiple Plug commands can be written in a single line using | separators
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets' | 
+Plug 'neovim/nvim-lspconfig' | Plug 'hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/cmp-buffer' | Plug 'hrsh7th/cmp-path' | Plug 'hrsh7th/cmp-cmdline' | Plug 'hrsh7th/nvim-cmp'
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets' | Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
@@ -47,9 +34,7 @@ set background=dark
 set ignorecase
 set mouse+=a
 set clipboard+=unnamedplus,unnamed
-set number
 set ruler
-set relativenumber
 set history=10000
 set hidden
 
@@ -82,7 +67,7 @@ aug END
 
 aug LC
 	au!
-	au Filetype cpp nmap <buffer> <F9> :!g++ -std=c++11 % && ./a.out < inp<cr>
+	au Filetype cpp nmap <buffer> <F9> :!g++ -std=c++17 % && ./a.out < inp<cr>
 	au Filetype cpp setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
 	au Filetype go nmap <buffer> <F9> :!go run %<cr>
 aug END
