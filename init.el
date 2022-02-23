@@ -29,16 +29,16 @@
   (load bootstrap-file nil 'nomessage))
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq mac-command-modifier 'meta)
+(global-auto-revert-mode)
+(show-paren-mode 1)
 
-  ;; use-package to simplify the config file
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+;; use-package to simplify the config file
+(straight-use-package 'use-package)
 
 (setq straight-use-package-by-default 't)
-
 (setq use-package-always-ensure 't)
+
 (use-package magit)
 (use-package which-key
   :ensure t
@@ -47,10 +47,7 @@
 (use-package go-mode)
 ;; (use-package company
 ;;   :init
-;;   (global-company-mode)
-;;   :commands (company company-files company-capf company-keywords)
-;;   :config
-;;   (setq company-backends (company-capf :separate company-files company-keywords)))
+;;   (global-company-mode))
 (use-package rg)
 (use-package undo-tree
   :init
@@ -61,6 +58,7 @@
 (use-package yasnippet
   :init
   (yas-global-mode 1))
+(use-package yasnippet-snippets)
 (use-package load-env-vars)
 (use-package projectile
   :ensure t
@@ -69,17 +67,18 @@
   :bind (:map projectile-mode-map
               ("s-p" . projectile-command-map)
               ("C-c p" . projectile-command-map)))
-(use-package consult)
-
-  ;; :hook (go-mode . lsp-deferred))
+;; :hook (go-mode . lsp-deferred))
 (use-package lsp-mode
   :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
-  :hook
-  ((prog-mode . lsp-deferred)
-   (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred)
-  )
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (go-mode . lsp-deferred)
+	 (c++-mode . lsp-deferred)
+	 (c-mode . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deffered))
 
 (use-package org)
 
@@ -98,18 +97,17 @@
   (setq vertico-resize t)
 
   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)'
+  ;; (setq vertico-cycle t)
+  )
+
+(use-package consult
   :config
-  ;; Use `consult-completion-in-region' if Vertico is enabled.
-  ;; Otherwise use the default `completion--in-region' function.
   (setq completion-in-region-function
-	(lambda (&rest args)
+        (lambda (&rest args)
           (apply (if vertico-mode
                      #'consult-completion-in-region
                    #'completion--in-region)
-		 args)))
-  )
-
+                 args))))
 ;; Optionally use the `orderless' completion style. See
 ;; `+orderless-dispatch' in the Consult wiki for an advanced Orderless style
 ;; dispatcher. Additionally enable `partial-completion' for file path
@@ -128,16 +126,17 @@
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
   :init
-  (savehist-mode))
-(load-theme 'tango-dark t)
+  (savehist-mode t))
+(load-theme 'whiteboard t)
 (use-package tree-sitter
-  :init
-  (global-tree-sitter-mode))
-(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+    :init
+    (global-tree-sitter-mode)
+    :hook
+    (tree-sitter-after-on-hook . tree-sitter-hl-mode))
 
 (use-package tree-sitter-langs)
-(show-paren-mode 1)
-;; protobuf 
+
+
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
 (require 'protobuf-mode)
 ;; A few more useful configurations...
@@ -161,7 +160,50 @@
 
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
+(use-package marginalia
+  ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
 
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode))
+
+(use-package smartparens
+  :config
+  (show-smartparens-global-mode t)
+  (smartparens-global-mode t))
+
+(setq default-frame-alist '((font . "Source Code Pro-14")))
+;; Behave like vi's o command
+(defun open-next-line (arg)
+  "Move to the next line and then opens a line.
+    See also `newline-and-indent'."
+  (interactive "p")
+  (end-of-line)
+  (open-line arg)
+  (forward-line 1)
+  (when newline-and-indent
+    (indent-according-to-mode)))
+;; Behave like vi's O command
+(defun open-previous-line (arg)
+  "Open a new line before the current one. 
+     See also `newline-and-indent'."
+  (interactive "p")
+  (beginning-of-line)
+  (open-line arg)
+  (when newline-and-indent
+    (indent-according-to-mode)))
+(global-set-key (kbd "C-o") 'open-next-line)
+(global-set-key (kbd "C-S-o") 'open-previous-line)
+
+;; Autoindent open-*-lines
+(defvar newline-and-indent t
+  "Modify the behavior of the open-*-line functions to cause them to autoindent.")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -169,7 +211,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets projectile undo-tree orderless vertico company-capf load-env-vars yasnippet rg company lsp-mode go-mode use-package magit which-key)))
+   '(yasnippet-snippets projectile undo-tree orderless vertico company-capf load-env-vars yasnippet rg company lsp-mode go-mode use-package magit which-key))
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
