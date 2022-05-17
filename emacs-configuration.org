@@ -1,0 +1,472 @@
+#+TITLE: Java Programming in Emacs
+* Introduction
+This configuration file contains setup of Emacs packages for Language Server Protocol (LSP). I will use ~use-package~ for package management.
+* Setup
+  Since this is an org file, I am using ~org-babel-load-file~ command to load this file from [[init.el]] file. Emacs loads [[init.el]] when it starts. I have setup a variable called ~EMACS_DIR~ to point to *.emacs.d* as the setup directory. Adjust it to match your system. To speed up loading time of emacs, I have ~used gc-cons-threshold~ and ~gc-cons-percentage~ variables, before and after loading this configuration file. I have set ~gc-cons-threshold~ value to 300 mb after startup. Adjust it to comfortable value according to memory in your system. ~lsp-java~ package however has ~1GB~ setup as default.
+
+
+** Behaviour for home and end
+In the following code block, we will initialize package repositories and after that install ~use-package~. This package is used to install other packages.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "<end>") 'move-end-of-line)
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+#+END_SRC
+
+#+RESULTS:
+: move-beginning-of-line
+
+** Environment Setup
+In some operating systems Emacs does not load environment variables properly. Therefore, below we install a package called ~exec-path-from-shell~ and initialize it.
+ #+begin_src emacs-lisp
+ (use-package exec-path-from-shell :ensure t)
+ (exec-path-from-shell-initialize)
+ #+end_src
+
+ #+RESULTS:
+ : ((MANPATH . /usr/share/man:/usr/local/share/man) (PATH . /usr/local/opt/openjdk/bin:/usr/local/opt/openssl/bin:/usr/local/opt/curl/bin:/usr/local/opt/gettext/bin:/Users/khoa.nguyen/.vim/pack/junegunn/start/fzf/bin:usr/local/opt/ncurses/bin:/Users/khoa.nguyen/go/bin:/usr/local/mysql/bin:/Users/khoa.nguyen/Library/Python/3.8/bin:/Users/khoa.nguyen/scripts/:/Users/khoa.nguyen/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/opt/openjdk/bin:/usr/local/opt/openssl/bin:/usr/local/opt/curl/bin:/usr/local/opt/gettext/bin:/Users/khoa.nguyen/.vim/pack/junegunn/start/fzf/bin:usr/local/opt/ncurses/bin:/Users/khoa.nguyen/go/bin:/usr/local/mysql/bin:/Users/khoa.nguyen/Library/Python/3.8/bin:/Users/khoa.nguyen/scripts/:/Users/khoa.nguyen/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_14:/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_14:/Users/khoa.nguyen/.fzf/bin:/Users/khoa.nguyen/Library/Python/3.9/bin:/Users/khoa.nguyen/Library/Python/2.7/bin:/Applications/nvim-osx64/bin:/Users/khoa.nguyen/Library/Python/3.9/bin:/Users/khoa.nguyen/Library/Python/2.7/bin:/Applications/nvim-osx64/bin))
+ 
+** Operating System specific variable setup
+   Since we want to use same emacs configuration for each of our operating systems, we want to separate values that are different between different operating systems. In my setup, I have different values for ~JAVA_HOME~ in my linux.el and mac.el. Adjust these values accordingly for your setup if you are using different versions of Java. Following code loads mac.el, linux.el or windows.el based on where you run this configuration.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Load platform specific variables using specific files. E.g linux.el. 
+  ;; Make necessary changes as needed
+  ;; (cond ((eq system-type 'windows-nt) (load (concat EMACS_DIR "windows")))
+  ;; ((eq system-type 'gnu/linux) (load (concat EMACS_DIR "linux")))
+  ;; ((eq system-type 'darwin) (load (concat EMACS_DIR "mac")))
+  ;; (t (load-library "default")))
+ #+END_SRC
+
+ #+RESULTS:
+
+** Basic setup
+Here, I add some basic emacs setup like loading the language, disabling the toolbar, setting up backup directory etc. I have added comments to each setting.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Disable annoying ring-bell when backspace key is pressed in certain situations
+  (setq ring-bell-function 'ignore)
+
+  ;; Disable scrollbar and toolbar
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+
+  ;; Set language environment to UTF-8
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+
+  ;; Longer whitespace, otherwise syntax highlighting is limited to default column
+  (setq whitespace-line-column 1000) 
+
+  ;; Enable soft-wrap
+  (global-visual-line-mode 1)
+
+  ;; Maintain a list of recent files opened
+  (recentf-mode 1)            
+  (setq recentf-max-saved-items 50)
+
+  ;; Move all the backup files to specific cache directory
+  ;; This way you won't have annoying temporary files starting with ~(tilde) in each directory
+  ;; Following setting will move temporary files to specific folders inside cache directory in EMACS_DIR
+
+  (setq user-cache-directory (concat EMACS_DIR "cache"))
+  (setq backup-directory-alist `(("." . ,(expand-file-name "backups" user-cache-directory)))
+	url-history-file (expand-file-name "url/history" user-cache-directory)
+	auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-" user-cache-directory)
+	projectile-known-projects-file (expand-file-name "projectile-bookmarks.eld" user-cache-directory))
+
+  ;; Org-mode issue with src block not expanding
+  ;; This is a fix for bug in org-mode where <s TAB does not expand SRC block
+  (when (version<= "9.2" (org-version))
+	(require 'org-tempo))
+
+  ;; Coding specific setting
+
+  ;; Automatically add ending brackets and braces
+  ;; (electric-pair-mode 1)
+
+  ;; Make sure tab-width is 4 and not 8
+  (setq-default tab-width 4)
+
+  ;; Highlight matching brackets and braces
+  (show-paren-mode 1)
+  ;; (add-hook prog-mode-hook 'linum-mode)
+  ;; (
+   ;; add-hook prog-mode-hook 'auto-fill-mode)
+
+  (setq gc-cons-threshold 100000000
+	read-process-output-max (* 1024 1024) ;; 1mb
+	mac-command-modifier 'meta)
+  (global-auto-revert-mode)
+
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Basic Keybinds
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<f2>") 'save-buffer)
+  (global-set-key (kbd "<f5>") 'compile)  
+  (global-set-key (kbd "<S-left>") 'windmove-left)
+  (global-set-key (kbd "<S-right>") 'windmove-right)
+  (global-set-key (kbd "<S-up>") 'windmove-up)
+  (global-set-key (kbd "<S-down>") 'windmove-down)
+
+#+end_src
+
+#+RESULTS:
+: compile
+
+* Looks
+** Theme
+   I tend to like *doom-themes* package. Below we will install doom theme. In addition, I will also install a package called *heaven-and-hell*. This allows us to toggle between two themes using a shortcut key. I will assign ~F6~ key to toggling the theme and ~C-c F6~ to set to default theme.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t 
+    :init 
+    (load-theme 'doom-palenight t))
+
+  (use-package heaven-and-hell
+    :ensure t
+    :init
+    (setq heaven-and-hell-theme-type 'dark)
+    (setq heaven-and-hell-themes
+	  '((light . doom-acario-light)
+	    (dark . doom-palenight)))
+    :hook (after-init . heaven-and-hell-init-hook)
+    :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
+	   ("<f6>" . heaven-and-hell-toggle-theme)))
+
+#+END_SRC
+
+#+RESULTS:
+: heaven-and-hell-toggle-theme
+
+If you press F6 key in your keyboard, it should switch between doom-palenight and doom-acario-light themes. If you want to go back to the default theme press ~Ctrl + C and F6~.
+
+** Disable ansi color in compilation mode
+   This will help eliminate weird escape sequences during compilation of projects.
+   #+begin_src emacs-lisp
+
+   (defun my/ansi-colorize-buffer ()
+   (let ((buffer-read-only nil))
+   (ansi-color-apply-on-region (point-min) (point-max))))
+   
+   (use-package ansi-color
+   :ensure t
+   :config
+   (add-hook 'compilation-filter-hook 'my/ansi-colorize-buffer)
+   )
+   #+end_src
+
+   #+RESULTS:
+   : t
+
+* Custom Packages
+  In this section we will install some of the packages that we will use for various project and file management.
+** Undo-tree
+#+begin_src emacs-lisp
+  (use-package undo-tree
+  :init
+  (global-undo-tree-mode)
+  :bind
+  (("C-/" . undo-tree-undo)
+   ("C-?" . undo-tree-redo)
+   ("C-z" . undo-tree-undo)
+   ("C-s-z" . undo-tree-redo)))
+#+end_src
+
+#+RESULTS:
+: undo-tree-redo
+
+** Key-Chord
+   Key-Chord allows us to bind regular keyboard keys for various commands without having to use prefix keys such as Ctrl, Alt or Super etc.
+
+#+begin_src emacs-lisp
+(use-package use-package-chords
+:ensure t
+:init 
+:config (key-chord-mode 1)
+(setq key-chord-two-keys-delay 0.4)
+(setq key-chord-one-key-delay 0.5) ; default 0.2
+)
+#+end_src
+
+#+RESULTS:
+: t
+
+Here, we changed the delay for the consecutive key to be little higher than default. Adjust this to what you feel comfortable.
+
+** Projectile
+   Projectile helps us with easy navigation within a project. Projectile recognizes several source control managed folders e.g *git, mercurial, maven, sbt*, and a folder with empty *.projectile* file. You can use ~C-c p~ to invoke any projectile command. This is a very useful key to remember.
+
+#+begin_src emacs-lisp
+  (use-package projectile 
+	:ensure t
+	:init (projectile-mode +1)
+	:config 
+	(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+	)   
+#+end_src
+
+#+RESULTS:
+: t
+
+** Avy Goto
+   Avy allows you to quickly jump to certain character, word or line within the file. Use ~jc~, ~jw~ or ~jl~ to quickly jump within current file. Change it to other keys, if you feel you are using this set of keys for other purposes. 
+
+# #+begin_src emacs-lisp
+# (use-package avy 
+# :ensure t
+# :chords
+# ("jc" . avy-goto-char)
+# ("jw" . avy-goto-word-1)
+# ("jl" . avy-goto-line))
+# #+end_src
+
+** Which Key
+For some prefix commands like ~C-c p~ or ~C-c h~ we want Emacs to visually guide you through the available options. Following package allows us to do that.
+#+begin_src emacs-lisp
+(use-package which-key 
+:ensure t 
+:init
+(which-key-mode)
+)
+#+end_src
+
+#+RESULTS:
+
+** Run Code
+We can use quickrun package to execute code (if it has main). E.g. If you have a java file with main method, it will run with the associated shortcut key ~C-c r~ or quickrun command. Quickrun has support for several languages.
+#+begin_src emacs-lisp
+(use-package quickrun 
+:ensure t
+:bind ("C-c r" . quickrun))
+#+end_src
+
+#+RESULTS:
+: quickrun
+
+* Language Server Protocol (LSP)
+  With above setup done, below we will setup several packages closely related to LSP.
+
+** Company
+Complete anything aka Company provides auto-completion. Company-capf is enabled by default when you start LSP on a project. You can also invoke ~M-x company-capf~ to enable capf (completion at point function).
+#+begin_src emacs-lisp
+(use-package company :ensure t)
+#+end_src
+
+#+RESULTS:
+
+** Yasnippet
+Yasnippet is a template system for Emacs. It allows you to type abbreviation and complete the associated text.
+
+#+begin_src emacs-lisp
+(use-package yasnippet :config (yas-global-mode))
+(use-package yasnippet-snippets :ensure t)
+#+end_src
+
+#+RESULTS:
+
+E.g. In java mode, if you type ~pr~ and hit ~<TAB>~ it should complete to ~System.out.println("text");~
+
+To create a new snippet you can use ~yas-new-snippet~ command. 
+
+** FlyCheck
+FlyCheck checks for errors in code at run-time.
+#+begin_src emacs-lisp
+  ;; (use-package flycheck :ensure t :init (global-flycheck-mode))
+#+end_src
+
+#+RESULTS:
+
+** Dap Mode
+Emacs Debug Adapter Protocol aka DAP Mode allows us to debug your program. Below we will integrate ~dap-mode~ with ~dap-hydra~. ~Dap-hydra~ shows keys you can use to enable various options and jump through code at runtime. After we install dap-mode we will also install ~dap-java~.
+
+#+begin_src emacs-lisp
+  (use-package dap-mode
+	:ensure t
+	:after (lsp-mode)
+	:functions dap-hydra/nil
+	:config
+	(require 'dap-java)
+	:bind (:map lsp-mode-map
+		   ("<f5>" . dap-debug)
+		   ("M-<f5>" . dap-hydra))
+	:hook ((dap-mode . dap-ui-mode)
+	  (dap-session-created . (lambda (&_rest) (dap-hydra)))
+	  (dap-terminated . (lambda (&_rest) (dap-hydra/nil)))))
+
+  ;; (use-package dap-java :ensure nil)
+#+end_src
+
+** Treemacs
+Treemacs provides UI elements used for LSP UI. Let's install lsp-treemacs and its dependency treemacs. We will also Assign ~M-9~ to show error list.
+#+begin_src emacs-lisp
+(use-package lsp-treemacs
+  :after (lsp-mode treemacs)
+  :ensure t
+  :commands lsp-treemacs-errors-list
+  :bind (:map lsp-mode-map
+         ("M-9" . lsp-treemacs-errors-list)))
+
+(use-package treemacs
+  :ensure t
+  :commands (treemacs)
+  :after (lsp-mode))
+#+end_src
+
+** LSP UI
+LSP UI is used in various packages that require UI elements in LSP. E.g ~lsp-ui-flycheck-list~ opens a windows where you can see various coding errors while you code. You can use ~C-c l T~ to toggle several UI elements. We have also remapped some of the xref-find functions, so that we can easily jump around between symbols using ~M-.~, ~M-,~ and ~M-?~ keys.
+
+#+begin_src emacs-lisp
+(use-package lsp-ui
+:ensure t
+:after (lsp-mode)
+:bind (:map lsp-ui-mode-map
+         ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+         ([remap xref-find-references] . lsp-ui-peek-find-references))
+:init (setq lsp-ui-doc-delay 1.5
+      lsp-ui-doc-position 'bottom
+	  lsp-ui-doc-max-width 100
+))
+#+end_src
+
+#+RESULTS:
+
+Go through this [[https://github.com/emacs-lsp/lsp-ui/blob/master/lsp-ui-doc.el][link]]  to see what other parameters are provided.
+
+** Verico
+#+begin_src emacs-lisp
+  (use-package vertico
+	:init
+	(vertico-mode)
+
+	;; Different scroll margin
+	;; (setq vertico-scroll-margin 0)
+
+	;; Show more candidates
+	(setq vertico-count 20)
+
+	;; Grow and shrink the Vertico minibuffer
+	(setq vertico-resize t)
+
+	;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+	;; (setq vertico-cycle t)
+	)
+
+  (use-package consult
+	:config
+	(setq completion-in-region-function
+		  (lambda (&rest args)
+			(apply (if vertico-mode
+					   #'consult-completion-in-region
+					 #'completion--in-region)
+				   args))))
+  (use-package orderless
+	:init
+	(setq completion-styles '(orderless)
+		  completion-category-defaults nil
+		  completion-category-overrides '((file (styles partial-completion)))))
+
+  ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  (use-package savehist
+	:init
+	(savehist-mode t))
+
+#+end_src
+
+#+RESULTS:
+
+** Marginalia
+#+begin_src emacs-lisp
+	(use-package marginalia
+	;; Either bind `marginalia-cycle` globally or only in the minibuffer
+	:bind (("M-A" . marginalia-cycle)
+		   :map minibuffer-local-map
+		   ("M-A" . marginalia-cycle))
+
+	;; The :init configuration is always executed (Not lazy!)
+	:init
+
+	;; Must be in the :init section of use-package such that the mode gets
+	;; enabled right away. Note that this forces loading the package.
+	(marginalia-mode))
+
+  (setq default-frame-alist '((font . "Monaco-14")))
+#+end_src
+
+#+RESULTS:
+: ((font . Monaco-14))
+
+** Install LSP Package
+Let's install the main package for lsp. Here we will integrate lsp with which-key. This way, when we type the prefix key ~C-c l~ we get additional help for compliting the command. 
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+	:ensure t
+
+	:hook (
+		   (lsp-mode . lsp-enable-which-key-integration)
+		   (java-mode . lsp-deferred)
+		   (go-mode . lsp-deferred)
+		   ;; (c++-mode . 'lsp-deferred)
+		   )
+	:init (setq 
+		   lsp-keymap-prefix "C-c l"              ; this is for which-key integration documentation, need to use lsp-mode-map
+		   lsp-enable-file-watchers nil
+		   read-process-output-max (* 1024 1024)  ; 1 mb
+		   lsp-completion-provider :capf
+		   lsp-idle-delay 0.500
+		   )
+	:config 
+	(setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+	(with-eval-after-load 'lsp-intelephense
+	  (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+	(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+	:commands (lsp lsp-deferred)
+	)
+#+end_src
+
+#+RESULTS:
+| lsp-mode |
+
+You can start LSP server in a java project by using ~C-c l s s~. Once you type ~C-c l~ ~which-key~ package should guide you through rest of the options. In above setting I have added some memory management settings as suggested in [[https://emacs-lsp.github.io/lsp-mode/page/performance/][this guide]]. Change them to higher numbers, if you find *lsp-mode* sluggish in your computer.
+
+** LSP Java
+This is the package that handles server installation and session management.
+#+begin_src  emacs-lisp
+  (use-package lsp-java 
+  :ensure t
+  :config (add-hook 'java-mode-hook 'lsp-deferred))
+#+end_src
+
+#+RESULTS:
+: t
+
+* Language config
+** C++
+#+begin_src emacs-lisp
+  (defun my/c++-compile-and-run-buffer ()
+	"compile and run c++ buffer"
+	(interactive)
+	(shell-command (concat "g++ -std=c++17 " (buffer-file-name) " && ./a.out <inp
+  "))
+	)
+
+  (define-key c++-mode-map (kbd "<f9>") 'my/c++-compile-and-run-buffer)
+#+end_src
+
+#+RESULTS:
+: my/c++-compile-and-run-buffer
+** Golang
+#+begin_src emacs-lisp
+  (use-package go-gen-test)
+#+end_src
+
+#+RESULTS:
+
+* Conclusion
+Go through [[https://github.com/emacs-lsp/lsp-java#supported-commands][Supported commands]] section of lsp-java github page to see commands provided in lsp-mode. Most of these commands are available under lsp's ~C-c l~ option. I hope this configuration file was useful.
