@@ -118,51 +118,34 @@ Here, I add some basic emacs setup like loading the language, disabling the tool
 #+RESULTS:
 : compile
 
-* Looks
-** Theme
-   I tend to like *doom-themes* package. Below we will install doom theme. In addition, I will also install a package called *heaven-and-hell*. This allows us to toggle between two themes using a shortcut key. I will assign ~F6~ key to toggling the theme and ~C-c F6~ to set to default theme.
 
-#+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
-    :ensure t 
-    :init 
-    (load-theme 'doom-palenight t))
+* Language config
+** C++
+#+begin_src emacs-lisp
+  (use-package cc-mode
+	:config
+  (defun my/c++-compile-and-run-buffer ()
+	"compile and run c++ buffer"
+	(interactive)
+	(shell-command (concat "g++ -std=c++17 " (buffer-file-name) " && ./a.out <inp
+  "))
+	)
 
-  (use-package heaven-and-hell
-    :ensure t
-    :init
-    (setq heaven-and-hell-theme-type 'dark)
-    (setq heaven-and-hell-themes
-	  '((light . doom-acario-light)
-	    (dark . doom-palenight)))
-    :hook (after-init . heaven-and-hell-init-hook)
-    :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
-	   ("<f6>" . heaven-and-hell-toggle-theme)))
-
-#+END_SRC
+  (define-key c++-mode-map (kbd "<f9>") 'my/c++-compile-and-run-buffer)
+  )
+#+end_src
 
 #+RESULTS:
-: heaven-and-hell-toggle-theme
+: t
+** Golang
+#+begin_src emacs-lisp
+  (use-package go-gen-test)
+#+end_src
 
-If you press F6 key in your keyboard, it should switch between doom-palenight and doom-acario-light themes. If you want to go back to the default theme press ~Ctrl + C and F6~.
+#+RESULTS:
 
-** Disable ansi color in compilation mode
-   This will help eliminate weird escape sequences during compilation of projects.
-   #+begin_src emacs-lisp
+** Java
 
-   (defun my/ansi-colorize-buffer ()
-   (let ((buffer-read-only nil))
-   (ansi-color-apply-on-region (point-min) (point-max))))
-   
-   (use-package ansi-color
-   :ensure t
-   :config
-   (add-hook 'compilation-filter-hook 'my/ansi-colorize-buffer)
-   )
-   #+end_src
-
-   #+RESULTS:
-   : t
 
 * Custom Packages
   In this section we will install some of the packages that we will use for various project and file management.
@@ -239,6 +222,10 @@ For some prefix commands like ~C-c p~ or ~C-c h~ we want Emacs to visually guide
 #+RESULTS:
 
 ** Run Code
+** Magit
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
 We can use quickrun package to execute code (if it has main). E.g. If you have a java file with main method, it will run with the associated shortcut key ~C-c r~ or quickrun command. Quickrun has support for several languages.
 #+begin_src emacs-lisp
 (use-package quickrun 
@@ -274,6 +261,13 @@ E.g. In java mode, if you type ~pr~ and hit ~<TAB>~ it should complete to ~Syste
 
 To create a new snippet you can use ~yas-new-snippet~ command. 
 
+** Hydra
+#+begin_src emacs-lisp
+  (use-package hydra)
+#+end_src
+
+#+RESULTS:
+
 ** FlyCheck
 FlyCheck checks for errors in code at run-time.
 #+begin_src emacs-lisp
@@ -286,18 +280,18 @@ FlyCheck checks for errors in code at run-time.
 Emacs Debug Adapter Protocol aka DAP Mode allows us to debug your program. Below we will integrate ~dap-mode~ with ~dap-hydra~. ~Dap-hydra~ shows keys you can use to enable various options and jump through code at runtime. After we install dap-mode we will also install ~dap-java~.
 
 #+begin_src emacs-lisp
-  (use-package dap-mode
-	:ensure t
-	:after (lsp-mode)
-	:functions dap-hydra/nil
-	:config
-	(require 'dap-java)
-	:bind (:map lsp-mode-map
-		   ("<f5>" . dap-debug)
-		   ("M-<f5>" . dap-hydra))
-	:hook ((dap-mode . dap-ui-mode)
-	  (dap-session-created . (lambda (&_rest) (dap-hydra)))
-	  (dap-terminated . (lambda (&_rest) (dap-hydra/nil)))))
+   (use-package dap-mode
+	 :ensure t
+	 :after (lsp-mode)
+	 :functions dap-hydra/nil
+	 :config
+	 ;; (require 'dap-java)
+	 :bind (:map lsp-mode-map
+			("<f5>" . dap-debug)
+			("M-<f5>" . dap-hydra))
+	 :hook ((dap-mode . dap-ui-mode)
+	   (dap-session-created . (lambda (&_rest) (dap-hydra)))
+	   (dap-terminated . (lambda (&_rest) (dap-hydra/nil)))))
 
   ;; (use-package dap-java :ensure nil)
 #+end_src
@@ -322,23 +316,23 @@ Treemacs provides UI elements used for LSP UI. Let's install lsp-treemacs and it
 LSP UI is used in various packages that require UI elements in LSP. E.g ~lsp-ui-flycheck-list~ opens a windows where you can see various coding errors while you code. You can use ~C-c l T~ to toggle several UI elements. We have also remapped some of the xref-find functions, so that we can easily jump around between symbols using ~M-.~, ~M-,~ and ~M-?~ keys.
 
 #+begin_src emacs-lisp
-(use-package lsp-ui
-:ensure t
-:after (lsp-mode)
-:bind (:map lsp-ui-mode-map
-         ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-         ([remap xref-find-references] . lsp-ui-peek-find-references))
-:init (setq lsp-ui-doc-delay 1.5
-      lsp-ui-doc-position 'bottom
-	  lsp-ui-doc-max-width 100
-))
+  (use-package lsp-ui
+  :ensure t
+  :after (lsp-mode)
+  :bind (:map lsp-ui-mode-map
+		   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+		   ([remap xref-find-references] . lsp-ui-peek-find-references))
+  :init (setq lsp-ui-doc-delay 1.5
+		lsp-ui-doc-position 'bottom
+		lsp-ui-doc-max-width 100
+  ))
 #+end_src
 
 #+RESULTS:
 
 Go through this [[https://github.com/emacs-lsp/lsp-ui/blob/master/lsp-ui-doc.el][link]]  to see what other parameters are provided.
 
-** Verico
+** Vertico
 #+begin_src emacs-lisp
   (use-package vertico
 	:init
@@ -395,11 +389,11 @@ Go through this [[https://github.com/emacs-lsp/lsp-ui/blob/master/lsp-ui-doc.el]
 	;; enabled right away. Note that this forces loading the package.
 	(marginalia-mode))
 
-  (setq default-frame-alist '((font . "Monaco-14")))
+  (setq default-frame-alist '((font . "Ubuntu Mono-14")))
 #+end_src
 
 #+RESULTS:
-: ((font . Monaco-14))
+: ((font . Ubuntu Mono-14))
 
 ** Install LSP Package
 Let's install the main package for lsp. Here we will integrate lsp with which-key. This way, when we type the prefix key ~C-c l~ we get additional help for compliting the command. 
@@ -412,7 +406,7 @@ Let's install the main package for lsp. Here we will integrate lsp with which-ke
 		   (lsp-mode . lsp-enable-which-key-integration)
 		   (java-mode . lsp-deferred)
 		   (go-mode . lsp-deferred)
-		   ;; (c++-mode . 'lsp-deferred)
+		   (c++-mode . 'lsp-deferred)
 		   )
 	:init (setq 
 		   lsp-keymap-prefix "C-c l"              ; this is for which-key integration documentation, need to use lsp-mode-map
@@ -422,9 +416,9 @@ Let's install the main package for lsp. Here we will integrate lsp with which-ke
 		   lsp-idle-delay 0.500
 		   )
 	:config 
-	(setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
-	(with-eval-after-load 'lsp-intelephense
-	  (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+	;; (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+	;; (with-eval-after-load 'lsp-intelephense
+	;; 	(setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
 	(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
 	:commands (lsp lsp-deferred)
 	)
@@ -438,35 +432,14 @@ You can start LSP server in a java project by using ~C-c l s s~. Once you type ~
 ** LSP Java
 This is the package that handles server installation and session management.
 #+begin_src  emacs-lisp
-  (use-package lsp-java 
+  (use-package lsp-java
+  :after lsp-mode
   :ensure t
   :config (add-hook 'java-mode-hook 'lsp-deferred))
 #+end_src
 
 #+RESULTS:
 : t
-
-* Language config
-** C++
-#+begin_src emacs-lisp
-  (defun my/c++-compile-and-run-buffer ()
-	"compile and run c++ buffer"
-	(interactive)
-	(shell-command (concat "g++ -std=c++17 " (buffer-file-name) " && ./a.out <inp
-  "))
-	)
-
-  (define-key c++-mode-map (kbd "<f9>") 'my/c++-compile-and-run-buffer)
-#+end_src
-
-#+RESULTS:
-: my/c++-compile-and-run-buffer
-** Golang
-#+begin_src emacs-lisp
-  (use-package go-gen-test)
-#+end_src
-
-#+RESULTS:
 
 * Conclusion
 Go through [[https://github.com/emacs-lsp/lsp-java#supported-commands][Supported commands]] section of lsp-java github page to see commands provided in lsp-mode. Most of these commands are available under lsp's ~C-c l~ option. I hope this configuration file was useful.
