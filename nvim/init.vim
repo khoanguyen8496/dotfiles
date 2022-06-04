@@ -13,21 +13,21 @@ Plug 'tpope/vim-fugitive'
 
 if has('nvim') 
 Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/cmp-buffer' | Plug 'hrsh7th/cmp-path' | Plug 'hrsh7th/cmp-cmdline' | Plug 'hrsh7th/nvim-cmp' | Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/cmp-buffer' | Plug 'hrsh7th/cmp-path' | Plug 'hrsh7th/cmp-cmdline' | Plug 'hrsh7th/nvim-cmp' 
 
 Plug 'numToStr/Comment.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzy-native.nvim' 
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'L3MON4D3/LuaSnip' | Plug 'rafamadriz/friendly-snippets'
+Plug 'L3MON4D3/LuaSnip' | Plug 'rafamadriz/friendly-snippets'| Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'kyazdani42/nvim-tree.lua'
 else
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-commentary'
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets' 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets' 
 endif
 
 " On-demand loading
@@ -42,7 +42,7 @@ call plug#end()
 
 set termguicolors
 colorscheme PaperColor
-set background=dark
+set background=light
 set ignorecase
 set mouse+=a
 set clipboard+=unnamedplus,unnamed
@@ -64,6 +64,11 @@ if has('nvim')
 endif
 " }}}
 "
+" gui stuff {{{
+if has('gui_running') 
+	set guifont=Monaco:h14
+endif
+" }}}
 " keymap {{{
 let mapleader="\<space>"
 if !has('nvim')
@@ -71,6 +76,8 @@ if !has('nvim')
 	nmap <F5> :!<cr>
 	nmap <F3> :Rg<cr>
 	nmap <leader>nt :NERDTreeToggle<cr>
+else 
+	nmap <leader>nt :NvimTreeToggle<cr>
 endif
 nmap <F2> :w<cr>
 vnoremap > >gv
