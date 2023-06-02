@@ -7,6 +7,25 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
 	vim.cmd [[packadd packer.nvim]]
 end
 
+vim.cmd [[ packadd cfilter ]]
+-- get from nvim-treesitter to get position from visual selection
+local function visual_selection_range()
+	local _, csrow, cscol, _ = unpack(vim.fn.getpos("'<"))
+	local _, cerow, cecol, _ = unpack(vim.fn.getpos("'>"))
+	if csrow < cerow or (csrow == cerow and cscol <= cecol) then
+		return csrow - 1, cscol - 1, cerow - 1, cecol
+	else
+		return cerow - 1, cecol - 1, csrow - 1, cscol
+	end
+end
+function Get_line_visual_selection()
+	local start_row, start_col, end_row, end_col = visual_selection_range()
+	if start_row ~= end_row then
+		error('grep visual needs to be in the same line')
+	end
+	local line = unpack(vim.api.nvim_buf_get_lines(0, start_row, end_row+1, false))
+	vim.cmd.grep(string.sub(line, start_col, end_col))
+end
 vim.g.mapleader=' '
 vim.opt.ignorecase = true
 vim.opt.mouse:append('a')
@@ -14,68 +33,109 @@ vim.opt.clipboard:append({'unnamedplus','unnamed'})
 vim.opt.ruler = true
 vim.opt.history=10000
 vim.opt.hidden = true
-
+vim.opt.showmatch=true
 vim.opt.smartindent = true
 vim.opt.expandtab = false
-vim.opt.softtabstop=8
-vim.opt.shiftwidth=8
-vim.opt.tabstop=8
-vim.cmd('set foldmethod=marker')
+vim.opt.softtabstop=2
+vim.opt.shiftwidth=2
+vim.opt.tabstop=2
+
+vim.cmd[[ set noswapfile ]]
+
 vim.opt.termguicolors=true
-vim.opt.background='light'
+vim.opt.background='dark'
 vim.opt.cursorline=true
+vim.opt.grepprg=[[rg --vimgrep]]
+-- folding
+vim.opt.foldmethod='indent'
+vim.opt.foldlevel=1
+vim.opt.foldnestmax=10
+-- tpope status line
+vim.opt.statusline=[[ [%n] %<%.99f %y%h%w%m%r%=%-14.(%l,%c%V%) %P ]]
 vim.keymap.set('n',  '<F2>', ':w<cr>')
 vim.keymap.set('v', '>', '>gv') 
 vim.keymap.set('v', '<',  '<gv')
+vim.keymap.set('n', 'sw', ':grep! <cword><cr>:copen<cr>')
+vim.keymap.set('v', 'sw', ':lua Get_line_visual_selection()<cr>')
+-- vim.keymap.set('v', 'sw', ':grep! '
 require('packer').startup(function(use)
-	use 'tpope/vim-surround'
-	use 'tpope/vim-sensible'
+	-- use 'tpope/vim-surround'
+	-- use 'tpope/vim-sensible'
+	use {
+		'hkupty/iron.nvim',
+		config = function()
+			local iron = require("iron.core")
+
+			iron.setup {
+				config = {
+					-- Whether a repl should be discarded or not
+					scratch_repl = true,
+					-- Your repl definitions come here
+					repl_definition = {
+						sh = {
+							-- Can be a table or a function that
+							-- returns a table (see below)
+							command = {"zsh"}
+						},
+						scm = {
+							command = 'guile'
+						}
+					},
+					-- How the repl window will be displayed
+					-- See below for more information
+					repl_open_cmd = 'split'
+				},
+				-- Iron doesn't set keymaps by default anymore.
+				-- You can set them here or manually add keymaps to the functions in iron.core
+				keymaps = {
+					send_motion = "<space>rsc",
+					visual_send = "<space>rsc",
+					send_file = "<space>rsf",
+					send_line = "<space>rsl",
+					send_mark = "<space>rsm",
+					mark_motion = "<space>rmc",
+					mark_visual = "<space>rmc",
+					remove_mark = "<space>rmd",
+					cr = "<space>rs<cr>",
+					interrupt = "<space>rs<space>",
+					exit = "<space>rsq",
+					clear = "<space>rcl",
+				},
+				-- If the highlight is on, you can change how it looks
+				-- For the available options, check nvim_set_hl
+				highlight = {
+					italic = true
+				},
+				ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
+			}
+
+			-- iron also has a list of commands, see :h iron-commands for all available commands
+			-- vim.keymap.set('n', '<space>rs', '<cmd>IronRepl<cr>')
+			-- vim.keymap.set('n', '<space>rr', '<cmd>IronRestart<cr>')
+			-- vim.keymap.set('n', '<space>rf', '<cmd>IronFocus<cr>')
+			-- vim.keymap.set('n', '<space>rh', '<cmd>IronHide<cr>')
+		end
+	}
+	use {
+		"rebelot/kanagawa.nvim",
+		config=function ()
+			vim.cmd [[colorscheme kanagawa]]
+		end
+	}
+	use {
+		'echasnovski/mini.nvim',
+		config = function ()
+			require('mini.basics').setup()
+			require('mini.surround').setup()
+			require('mini.comment').setup()
+			require('mini.bracketed').setup()
+		end
+	}
 	use 'tpope/vim-fugitive'
 	use {
 		'glacambre/firenvim',
 		run = function() vim.fn['firenvim#install'](0) end 
 	}
-	use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' },
-		config = function ()
-
-			-- [[ Configure Telescope ]]
-			-- See `:help telescope` and `:help telescope.setup()`
-			require('telescope').setup {
-				defaults = {
-					mappings = {
-						i = {
-							['<C-u>'] = false,
-							['<C-d>'] = false,
-						},
-					},
-				},
-			}
-
-			-- Enable telescope fzf native, if installed
-			pcall(require('telescope').load_extension, 'fzf')
-
-			-- See `:help telescope.builtin`
-			vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-			vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-			vim.keymap.set('n', '<leader>/', function()
-				-- You can pass additional configuration to telescope to change theme, layout, etc.
-				require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-					winblend = 10,
-				})
-				end, { desc = '[/] Fuzzily search in current buffer]' })
-
-			vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { 
-				desc = '[S]earch [F]iles' })
-			vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-			vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-			vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-			vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
-
-		end
-	}
-
-	-- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
-	use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
 	use 'mfussenegger/nvim-jdtls'
 	use { -- LSP Configuration & Plugins
 		'neovim/nvim-lspconfig',
@@ -108,28 +168,16 @@ require('packer').startup(function(use)
 					vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
 				end
 
-				nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-				nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-				nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-				nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-				nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-				nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-				nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-				nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-				-- See `:help K` for why this keymap
-				nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-				nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
-
-				-- Lesser used LSP functionality
-				nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-				nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-				nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-				nmap('<leader>wl', function()
-					print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, '[W]orkspace [L]ist Folders')
-
+				vim.cmd([[
+	nnoremap <buffer> K <cmd>lua vim.lsp.buf.hover()<cr>
+	nnoremap <buffer> crq <cmd>lua vim.diagnostic.setqflist()<cr>
+	nnoremap <buffer> crr <cmd>lua vim.lsp.buf.code_action()<cr>
+	nnoremap <buffer> crn <cmd>lua vim.lsp.buf.rename()<cr>
+	nnoremap <buffer> gO <cmd>lua vim.lsp.buf.document_symbol()<cr>
+	nnoremap <buffer> gd <cmd>lua vim.lsp.buf.definition()<cr>
+	nnoremap <buffer> gr <cmd>lua vim.lsp.buf.references()<cr>
+	nnoremap <buffer> gi <cmd>lua vim.lsp.buf.implementation()<cr>
+	]])
 				-- Create a command `:Format` local to the LSP buffer
 				vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
 					vim.lsp.buf.format()
@@ -146,7 +194,6 @@ require('packer').startup(function(use)
 				pyright = {},
 				rust_analyzer = {},
 				tsserver = {},
-				sumneko_lua = {},
 			}
 
 			-- Setup neovim lua configuration
@@ -279,7 +326,7 @@ require('packer').startup(function(use)
 						else
 							fallback()
 						end
-					end, { 'i', 's' }),
+						end, { 'i', 's' }),
 					['<S-Tab>'] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_prev_item()
@@ -288,7 +335,7 @@ require('packer').startup(function(use)
 						else
 							fallback()
 						end
-					end, { 'i', 's' }),
+						end, { 'i', 's' }),
 				},
 				sources = {
 					{ name = 'nvim_lsp' },
@@ -302,20 +349,6 @@ require('packer').startup(function(use)
 	}
 
 	use {
-		'nvim-lualine/lualine.nvim', -- Fancier statusline
-		config = function()
-			-- Set lualine as statusline
-			-- See `:help lualine.txt`
-			require('lualine').setup {
-				options = {
-					icons_enabled = false,
-					component_separators = '|',
-					section_separators = '',
-				},
-			}
-		end
-	}
-	use {
 		'L3MON4D3/LuaSnip',
 		requires = 'rafamadriz/friendly-snippets',
 		config = function  ()
@@ -324,9 +357,15 @@ require('packer').startup(function(use)
 		end
 	}
 	use {
-		'numToStr/Comment.nvim', 
-		config = function() require'Comment'.setup() end
+		'junegunn/fzf.vim',
+		requires = 'junegunn/fzf',
+		config = function() 
+			vim.cmd [[ let g:fzf_preview_window = [] ]]
+			vim.keymap.set('n', '<leader>sf', ':Files<cr>')
+			vim.keymap.set('n', '<leader>rg', ':Rg<cr>')
+		end
 	}
+
 	if packer_bootstrap then
 		require('packer').sync()
 	end
